@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DaTetrisClassic</string>
+    <string name="leftButtonText">Left</string>
 </resources>
