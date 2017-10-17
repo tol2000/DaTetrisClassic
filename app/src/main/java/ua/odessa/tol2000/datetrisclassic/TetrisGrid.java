@@ -5,7 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+
+import java.util.logging.Logger;
 
 /**
  * Created by Us01 on 13.10.2017.
@@ -13,32 +16,29 @@ import android.view.View;
 
 public class TetrisGrid extends View {
 
+    private final int backColor = Color.WHITE;
+
     private int numColumns, numRows;
     private int cellWidth, cellHeight;
-    private Paint blackPaint = new Paint();
+    private Paint cellPaint = new Paint();
     private boolean[][] cellChecked;
 
-    public TetrisGrid(Context context) {
+    private int[][] tetGlass;  // array of class (each cell - color in int format)
+
+    public TetrisGrid(Context context)
+    {
         this(context, null);
     }
 
     public TetrisGrid(Context context, AttributeSet attrs) {
         super(context, attrs);
-        blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-    }
-
-    public void setNumColumns(int numColumns) {
-        this.numColumns = numColumns;
-        calculateDimensions();
+        cellPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        cellPaint.setColor(backColor);
+        Log.v(this.getClass().getName(),LocalUtils.getDate()+" TetrisGrid created!");
     }
 
     public int getNumColumns() {
         return numColumns;
-    }
-
-    public void setNumRows(int numRows) {
-        this.numRows = numRows;
-        calculateDimensions();
     }
 
     public int getNumRows() {
@@ -48,64 +48,56 @@ public class TetrisGrid extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        calculateDimensions();
+        refreshGlass();
     }
 
-    private void calculateDimensions() {
+    public void initGrid(int numRows, int numColumns) {
         if (numColumns < 1 || numRows < 1) {
-            return;
+            throw new IndexOutOfBoundsException("rows and columns must be >1");
         }
+        this.numColumns = numColumns;
+        this.numRows = numRows;
+        tetGlass = new int[numRows][numColumns];
+        for (int i=0; i<numRows; i++)
+            for (int j=0; j<numColumns; j++)
+                tetGlass[i][j] = backColor;
+    }
 
+    public void refreshGlass() {
         cellWidth = getWidth() / numColumns;
         cellHeight = getHeight() / numRows;
-
-        cellChecked = new boolean[numColumns][numRows];
-
         invalidate();
+    }
+
+    public void figDisp(Figure[] figure, Boolean clear) {
+        int color = backColor;
+        for (int i=0; i<figure.length; i++) {
+            if (!clear) color = figure[i].color;
+            tetGlass[figure[i].y+1][figure[i].x*2+1] = color;
+            //tetGlass[figure[i].y+1][figure[i].x*2+2] = color;
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(Color.WHITE);
-
-        if (numColumns == 0 || numRows == 0) {
-            return;
-        }
-
+        //canvas.drawColor(backColor);
         int width = getWidth();
         int height = getHeight();
-
-        for (int i = 0; i < numColumns; i++) {
-            for (int j = 0; j < numRows; j++) {
-                if (cellChecked[i][j]) {
-
-                    canvas.drawRect(i * cellWidth, j * cellHeight,
-                            (i + 1) * cellWidth, (j + 1) * cellHeight,
-                            blackPaint);
-                }
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numColumns; j++) {
+                int color = tetGlass[i][j];
+                drawCell(canvas, i, j, color);
             }
-        }
-
-        for (int i = 1; i < numColumns; i++) {
-            canvas.drawLine(i * cellWidth, 0, i * cellWidth, height, blackPaint);
-        }
-
-        for (int i = 1; i < numRows; i++) {
-            canvas.drawLine(0, i * cellHeight, width, i * cellHeight, blackPaint);
         }
     }
 
-    //@Override
-    //public boolean onTouchEvent(MotionEvent event) {
-    //    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-    //        int column = (int)(event.getX() / cellWidth);
-    //        int row = (int)(event.getY() / cellHeight);
-    //
-    //        cellChecked[column][row] = !cellChecked[column][row];
-    //        invalidate();
-    //    }
-    //
-    //    return true;
-    //}
+    private void drawCell(Canvas canvas, int row, int col, int color) {
+        if (cellPaint.getColor() != color) cellPaint.setColor(color);
+        canvas.drawRect(
+            col * cellWidth, row * cellHeight,
+            (col + 1) * cellWidth, (row + 1) * cellHeight,
+            cellPaint
+        );
+    }
 
 }
