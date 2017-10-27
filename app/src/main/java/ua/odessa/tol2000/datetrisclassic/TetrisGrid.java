@@ -34,7 +34,7 @@ public class TetrisGrid extends View {
         super(context, attrs);
         cellPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         cellPaint.setColor(backColor);
-        Log.v(this.getClass().getName(),LocalUtils.getDate()+" TetrisGrid created!");
+        LocalData.logV("TetrisGrid created!");
     }
 
     public int getNumColumns() {
@@ -70,11 +70,15 @@ public class TetrisGrid extends View {
     }
 
     public void figDisp(Figure[] figure, Boolean clear) {
-        int color = backColor;
-        for (int i=0; i<figure.length; i++) {
-            if (!clear) color = figure[i].color;
-            tetGlass[figure[i].y+1][figure[i].x*2+1] = color;
-            //tetGlass[figure[i].y+1][figure[i].x*2+2] = color;
+        try {
+            int color = backColor;
+            for (int i = 0; i < figure.length; i++) {
+                if (!clear) color = figure[i].color;
+                tetGlass[figure[i].y][(figure[i].x) * 2] = color;
+                tetGlass[figure[i].y][(figure[i].x) * 2 + 1] = color;
+            }
+        } catch (Exception e) {
+            LocalData.logE(e.getLocalizedMessage());
         }
     }
 
