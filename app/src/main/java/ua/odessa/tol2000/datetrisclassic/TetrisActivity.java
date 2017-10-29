@@ -25,20 +25,20 @@ public class TetrisActivity extends AppCompatActivity {
         Figure[] f = new Figure[4];
         for (int i=0; i<4; i++) f[i] = new Figure();
 
-        f[0].y = 0;
+        f[0].y = 1;
         f[0].x = 4;
         f[0].color = Color.BLACK;
 
-        f[1].y = 1;
+        f[1].y = 2;
         f[1].x = 4;
         f[1].color = Color.BLACK;
 
-        f[2].y = 0;
-        f[2].x = 5;
+        f[2].y = 3;
+        f[2].x = 4;
         f[2].color = Color.BLACK;
 
-        f[3].y = 1;
-        f[3].x = 5;
+        f[3].y = 3;
+        f[3].x = 3;
         f[3].color = Color.BLACK;
 
         tetris.figDisp(f, false);
