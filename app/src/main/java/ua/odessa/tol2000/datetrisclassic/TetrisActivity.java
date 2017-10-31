@@ -1,26 +1,26 @@
 package ua.odessa.tol2000.datetrisclassic;
 
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.TextView;
 
 public class TetrisActivity extends AppCompatActivity {
 
-    TetrisGrid tetris;
+    DaTetris tetris;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tetris);
-        myInit();
+        //myInit();
+        tetris = new DaTetris((TetrisGrid) this.findViewById(R.id.tetrisGrid));
     }
 
     private void myInit() {
-        tetris = (TetrisGrid) this.findViewById(R.id.tetrisView);
-        tetris.initGrid(20,10);
+        TetrisGrid tetrisGrid = (TetrisGrid) this.findViewById(R.id.tetrisGrid);
+        tetrisGrid.initGrid(20,10);
 
         Figure[] f = new Figure[4];
         for (int i=0; i<4; i++) f[i] = new Figure();
@@ -41,12 +41,16 @@ public class TetrisActivity extends AppCompatActivity {
         f[3].x = 3;
         f[3].color = Color.BLACK;
 
-        tetris.figDisp(f, false);
-        tetris.refreshGlass();
+        tetrisGrid.figDisp(f, false);
+        tetrisGrid.refreshGlass();
     }
 
     public void leftButtonClick(View v) {
-        ((TextView) this.findViewById(R.id.textViewStatus)).setText("Left pressed "+LocalUtils.getDate());
+        writeStatus("Left pressed");
+    }
+
+    private void writeStatus(String status) {
+        ((TextView) this.findViewById(R.id.textViewStatus)).setText(LocalUtils.getDate()+": "+status);
     }
 
 }
