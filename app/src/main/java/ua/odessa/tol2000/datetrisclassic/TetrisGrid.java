@@ -5,10 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import java.util.logging.Logger;
 
 /**
  * Created by Us01 on 13.10.2017.
@@ -17,8 +14,9 @@ import java.util.logging.Logger;
 public class TetrisGrid extends View {
 
     private final int backColor = Color.WHITE;
+    private final int numRows = 20;
+    private final int numCols = 10;
 
-    private int numColumns, numRows;
     private int cellWidth, cellHeight;
     private Paint cellPaint = new Paint();
     private boolean[][] cellChecked;
@@ -37,45 +35,45 @@ public class TetrisGrid extends View {
         LocalData.logV("TetrisGrid created!");
     }
 
-    public int getNumColumns() {
-        return numColumns;
+    public int getNumCols() {
+        return numCols;
     }
 
     public int getNumRows() {
         return numRows;
     }
 
+    public int[][] getGlass() { return tetGlass; }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        refreshGlass();
+        refreshTpad();
     }
 
-    public void initGrid(int numRows, int numColumns) {
-        if (numColumns < 1 || numRows < 1) {
+    public void initGlass() {
+        if (numCols < 1 || numRows < 1) {
             throw new IndexOutOfBoundsException("rows and columns must be >1");
         }
-        this.numColumns = numColumns;
-        this.numRows = numRows;
-        tetGlass = new int[numRows][numColumns];
+        tetGlass = new int[numRows][numCols];
         for (int i=0; i<numRows; i++)
-            for (int j=0; j<numColumns; j++)
+            for (int j=0; j<numCols; j++)
                 tetGlass[i][j] = backColor;
     }
 
-    public void refreshGlass() {
-        cellWidth = getWidth() / numColumns;
+    public void refreshTpad() {
+        cellWidth = getWidth() / numCols;
         cellHeight = getHeight() / numRows;
         invalidate();
     }
 
-    public void figDisp(Figure[] figure, Boolean clear) {
+    public void figDisp(FigureElement[] figureElement, Boolean clear) {
         try {
             int color = backColor;
-            for (int i = 0; i < figure.length; i++) {
-                if (!clear) color = figure[i].color;
-                tetGlass[figure[i].y][(figure[i].x) * 2] = color;
-                tetGlass[figure[i].y][(figure[i].x) * 2 + 1] = color;
+            for (int i = 0; i < figureElement.length; i++) {
+                if (!clear) color = figureElement[i].color;
+                tetGlass[figureElement[i].y][(figureElement[i].x) * 2] = color;
+                tetGlass[figureElement[i].y][(figureElement[i].x) * 2 + 1] = color;
             }
         } catch (Exception e) {
             LocalData.logE(e.getLocalizedMessage());
@@ -88,7 +86,7 @@ public class TetrisGrid extends View {
         int width = getWidth();
         int height = getHeight();
         for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
+            for (int j = 0; j < numCols; j++) {
                 int color = tetGlass[i][j];
                 drawCell(canvas, i, j, color);
             }
